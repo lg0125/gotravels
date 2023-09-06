@@ -1,6 +1,9 @@
 package com.chris.gotravels.frameworks.convention.page;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,6 +18,9 @@ import java.util.stream.Collectors;
  * 可以理解是防腐层的一种实现，不论底层 ORM 框架，对外分页参数属性不变
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageResponse<T> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
