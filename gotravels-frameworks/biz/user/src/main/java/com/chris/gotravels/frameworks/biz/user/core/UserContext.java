@@ -27,8 +27,9 @@ public class UserContext {
     public static String getUserId() {
         UserInfoDTO userInfoDTO = USER_THREAD_LOCAL.get();
 
-        return Optional.ofNullable(userInfoDTO).map(UserInfoDTO::getUserId)
-                    .orElse(null);
+        return Optional.ofNullable(userInfoDTO)
+                .map(UserInfoDTO::getUserId)
+                .orElse(null);
     }
 
     /**
@@ -39,8 +40,9 @@ public class UserContext {
     public static String getUsername() {
         UserInfoDTO userInfoDTO = USER_THREAD_LOCAL.get();
 
-        return Optional.ofNullable(userInfoDTO).map(UserInfoDTO::getUsername)
-                    .orElse(null);
+        return Optional.ofNullable(userInfoDTO)
+                .map(UserInfoDTO::getUsername)
+                .orElse(null);
     }
 
     /**
@@ -51,8 +53,9 @@ public class UserContext {
     public static String getRealName() {
         UserInfoDTO userInfoDTO = USER_THREAD_LOCAL.get();
 
-        return Optional.ofNullable(userInfoDTO).map(UserInfoDTO::getRealName)
-                    .orElse(null);
+        return Optional.ofNullable(userInfoDTO)
+                .map(UserInfoDTO::getRealName)
+                .orElse(null);
     }
 
     /**
@@ -60,6 +63,19 @@ public class UserContext {
      */
     public static void removeUser() {
         USER_THREAD_LOCAL.remove();
+    }
+
+    /**
+     * 获取上下文中用户 Token
+     *
+     * @return 用户 Token
+     */
+    public static String getToken() {
+        UserInfoDTO userInfoDTO = USER_THREAD_LOCAL.get();
+
+        return Optional.ofNullable(userInfoDTO)
+                .map(UserInfoDTO::getToken)
+                .orElse(null);
     }
 }
 /*
