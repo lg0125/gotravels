@@ -55,6 +55,20 @@ public class AbstractStrategyChoose implements ApplicationListener<ApplicationIn
     }
 
     /**
+     * 根据 mark 查询具体策略并执行
+     *
+     * @param mark          策略标识
+     * @param requestParam  执行策略入参
+     * @param predicateFlag 匹配范解析标识
+     * @param <REQUEST>     执行策略入参范型
+     */
+    @SuppressWarnings("unchecked")
+    public <REQUEST> void chooseAndExecute(String mark, REQUEST requestParam, Boolean predicateFlag) {
+        AbstractExecuteStrategy executeStrategy = choose(mark, predicateFlag);
+        executeStrategy.execute(requestParam);
+    }
+
+    /**
      * 根据 mark 查询具体策略并执行，带返回结果
      *
      * @param mark         策略标识
