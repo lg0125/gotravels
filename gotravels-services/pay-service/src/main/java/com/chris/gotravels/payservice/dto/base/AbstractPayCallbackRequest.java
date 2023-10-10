@@ -1,0 +1,23 @@
+package com.chris.gotravels.payservice.dto.base;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 抽象支付回调入参实体
+ */
+@Getter
+public abstract class AbstractPayCallbackRequest implements PayCallbackRequest{
+    @Setter
+    private String orderRequestId;
+
+    @Override
+    public AliPayCallbackRequest getAliPayCallBackRequest() {
+        return null;
+    }
+
+    @Override
+    public String buildMark() {
+        return null;
+    }
+}
