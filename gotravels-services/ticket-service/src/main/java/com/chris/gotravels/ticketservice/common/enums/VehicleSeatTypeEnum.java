@@ -98,10 +98,10 @@ public enum VehicleSeatTypeEnum {
      */
     public static String findNameByCode(Integer code) {
         return Arrays.stream(VehicleSeatTypeEnum.values())
-                .filter(each -> Objects.equals(each.getCode(), code))
-                .findFirst()
-                .map(VehicleSeatTypeEnum::getName)
-                .orElse(null);
+                    .filter(each -> Objects.equals(each.getCode(), code))
+                    .findFirst()
+                    .map(VehicleSeatTypeEnum::getName)
+                    .orElse(null);
     }
 
     /**
@@ -109,9 +109,9 @@ public enum VehicleSeatTypeEnum {
      */
     public static String findValueByCode(Integer code) {
         return Arrays.stream(VehicleSeatTypeEnum.values())
-                .filter(each -> Objects.equals(each.getCode(), code))
-                .findFirst()
-                .map(VehicleSeatTypeEnum::getValue)
-                .orElse(null);
+                    .filter(each -> Objects.equals(each.getCode(), code))
+                    .findFirst()
+                    .map(VehicleSeatTypeEnum::getValue)
+                    .orElse(null);
     }
 }

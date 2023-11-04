@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * 用户注册检查证件号是否多次注销
+ * <p>
+ * 责任链模式 3——定义责任链业务具体处理器
+ * <p>
+ * 验证证件号是否多次注销，如果是的话加入黑名单
  */
 @Component
 @RequiredArgsConstructor

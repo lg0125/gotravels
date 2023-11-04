@@ -11,6 +11,7 @@ import java.util.Objects;
 /**
  * 地区&站点类型枚举
  */
+@Getter
 @RequiredArgsConstructor
 public enum RegionStationQueryTypeEnum {
     /**
@@ -46,13 +47,11 @@ public enum RegionStationQueryTypeEnum {
     /**
      * 类型
      */
-    @Getter
     private final Integer type;
 
     /**
      * 拼音列表
      */
-    @Getter
     private final List<String> spells;
 
     /**

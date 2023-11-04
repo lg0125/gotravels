@@ -35,15 +35,15 @@ public class DelayCloseOrderSendProduce
 
     @Override
     protected BaseSendExtendDTO buildBaseSendExtendParam(DelayCloseOrderEvent messageSendEvent) {
+        // RocketMQ 延迟消息级别 1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
         return BaseSendExtendDTO.builder()
-                .eventName("延迟关闭订单")
-                .keys(messageSendEvent.getOrderSn())
-                .topic(environment.resolvePlaceholders(OrderRocketMQConstant.ORDER_DELAY_CLOSE_TOPIC_KEY))
-                .tag(environment.resolvePlaceholders(OrderRocketMQConstant.ORDER_DELAY_CLOSE_TAG_KEY))
-                .sentTimeout(2000L)
-                // RocketMQ 延迟消息级别 1s 5s 10s 30s 1m 2m 3m 4m 5m 6m 7m 8m 9m 10m 20m 30m 1h 2h
-                .delayLevel(14)
-                .build();
+                    .eventName("延迟关闭订单")
+                    .keys(messageSendEvent.getOrderSn())
+                    .topic(environment.resolvePlaceholders(OrderRocketMQConstant.ORDER_DELAY_CLOSE_TOPIC_KEY))
+                    .tag(environment.resolvePlaceholders(OrderRocketMQConstant.ORDER_DELAY_CLOSE_TAG_KEY))
+                    .sentTimeout(2000L)
+                    .delayLevel(14)
+                    .build();
     }
 
     @SuppressWarnings("unchecked")
@@ -56,10 +56,9 @@ public class DelayCloseOrderSendProduce
                 ? UUID.randomUUID().toString()
                 : requestParam.getKeys();
 
-        return MessageBuilder
-                .withPayload(new MessageWrapper(requestParam.getKeys(), messageSendEvent))
-                .setHeader(MessageConst.PROPERTY_KEYS, keys)
-                .setHeader(MessageConst.PROPERTY_TAGS, requestParam.getTag())
-                .build();
+        return MessageBuilder.withPayload(new MessageWrapper(requestParam.getKeys(), messageSendEvent))
+                    .setHeader(MessageConst.PROPERTY_KEYS, keys)
+                    .setHeader(MessageConst.PROPERTY_TAGS, requestParam.getTag())
+                    .build();
     }
 }

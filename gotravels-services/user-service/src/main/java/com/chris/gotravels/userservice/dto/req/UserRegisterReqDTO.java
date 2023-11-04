@@ -4,6 +4,8 @@ import lombok.Data;
 
 /**
  * 用户注册请求参数
+ * <p>
+ * 责任链模式 1——确定执行方法的入参
  */
 @Data
 public class UserRegisterReqDTO {

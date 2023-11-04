@@ -47,36 +47,55 @@ public final class TrainSeatTypeSelector {
     private final AbstractStrategyChoose abstractStrategyChoose;
     private final ThreadPoolExecutor selectSeatThreadPoolExecutor;
 
+    /**
+     * 如果一个用户购买多种类型的车座，比如同一订单购买了一等座和二等座，那么就要按照不同的座位逻辑进行选座
+     * 引入线程池去做 单订单多座位 购票场景
+     * 首先，引入动态可监控线程池 Hippo4j，通过中间件定义的增强后的动态线程池帮助完成并行业务
+     * */
     public List<TrainPurchaseTicketRespDTO> select(Integer trainType, PurchaseTicketReqDTO requestParam) {
         List<PurchaseTicketPassengerDetailDTO> passengerDetails = requestParam.getPassengers();
 
+        // 根据用户购买的座位类型进行分组
         Map<Integer, List<PurchaseTicketPassengerDetailDTO>> seatTypeMap = passengerDetails.stream()
                 .collect(Collectors.groupingBy(PurchaseTicketPassengerDetailDTO::getSeatType));
 
+        // 分配好用户相关的座位信息，容器修改为线程安全的数组集合
         List<TrainPurchaseTicketRespDTO> actualResult = new CopyOnWriteArrayList<>();
 
+        // 如果座位类型超过单个并行分配座位
         if (seatTypeMap.size() > 1) {
+            // 添加多线程执行结果类获取 Future，流程执行完成后获取
             List<Future<List<TrainPurchaseTicketRespDTO>>> futureResults = new ArrayList<>();
 
+            // 座位分配流程，比如先执行一等座，再执行二等座...
             seatTypeMap.forEach((seatType, passengerSeatDetails) -> {
-                // 线程池参数如何设置？详情查看：https://nageoffer.com/12306/question
+                // 线程池参数如何设置？
                 Future<List<TrainPurchaseTicketRespDTO>> completableFuture = selectSeatThreadPoolExecutor.submit(
-                        () -> distributeSeats(trainType, seatType, requestParam, passengerSeatDetails)
+                        () -> distributeSeats(
+                                trainType,
+                                seatType,
+                                requestParam,
+                                passengerSeatDetails
+                        )
                 );
 
                 futureResults.add(completableFuture);
             });
 
-            // 并行流极端情况下有坑，详情参考：https://nageoffer.com/12306/question
+            // 并行流极端情况下有坑
+            // 获取座位分配结果
             futureResults.parallelStream().forEach(completableFuture -> {
                 try {
+                    // 分配好座位的用户信息添加到返回集合中
                     actualResult.addAll(completableFuture.get());
                 } catch (Exception e) {
                     throw new ServiceException("站点余票不足，请尝试更换座位类型或选择其它站点");
                 }
             });
         } else {
+            // 串行化执行座位分配流程，比如先执行一等座，再执行二等座...
             seatTypeMap.forEach((seatType, passengerSeatDetails) -> {
+                // 执行策略模式分配座位
                 List<TrainPurchaseTicketRespDTO> aggregationResult = distributeSeats(
                         trainType,
                         seatType,
@@ -84,9 +103,12 @@ public final class TrainSeatTypeSelector {
                         passengerSeatDetails
                 );
 
+                // 分配好座位的用户信息添加到返回集合中
                 actualResult.addAll(aggregationResult);
             });
         }
+
+        // 为了避免座位分配数量出现问题，我们应该在座位全部分配完成后进行一次验证
         if (CollUtil.isEmpty(actualResult) || !Objects.equals(actualResult.size(), passengerDetails.size()))
             throw new ServiceException("站点余票不足，请尝试更换座位类型或选择其它站点");
 
@@ -102,13 +124,23 @@ public final class TrainSeatTypeSelector {
                     passengerIds
             );
 
-            if (!passengerRemoteResult.isSuccess() || CollUtil.isEmpty(passengerRemoteResultList = passengerRemoteResult.getData()))
+            if (!passengerRemoteResult.isSuccess()
+                    || CollUtil.isEmpty(passengerRemoteResultList = passengerRemoteResult.getData()))
                 throw new RemoteException("用户服务远程调用查询乘车人相信信息错误");
         } catch (Throwable ex) {
             if (ex instanceof RemoteException)
-                log.error("用户服务远程调用查询乘车人相信信息错误，当前用户：{}，请求参数：{}", UserContext.getUsername(), passengerIds);
+                log.error(
+                        "用户服务远程调用查询乘车人相信信息错误，当前用户：{}，请求参数：{}",
+                        UserContext.getUsername(),
+                        passengerIds
+                );
             else
-                log.error("用户服务远程调用查询乘车人相信信息错误，当前用户：{}，请求参数：{}", UserContext.getUsername(), passengerIds, ex);
+                log.error(
+                        "用户服务远程调用查询乘车人相信信息错误，当前用户：{}，请求参数：{}",
+                        UserContext.getUsername(),
+                        passengerIds,
+                        ex
+                );
 
             throw ex;
         }
@@ -139,7 +171,7 @@ public final class TrainSeatTypeSelector {
             each.setAmount(trainStationPriceDO.getPrice());
         });
 
-        // 购买列车中间站点余票如何更新？详细查看：https://nageoffer.com/12306/question
+        // 购买列车中间站点余票如何更新？
         seatService.lockSeat(
                 requestParam.getTrainId(),
                 requestParam.getDeparture(),

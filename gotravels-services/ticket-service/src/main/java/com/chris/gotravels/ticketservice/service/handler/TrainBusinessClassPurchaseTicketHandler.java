@@ -49,7 +49,8 @@ public class TrainBusinessClassPurchaseTicketHandler extends AbstractTrainPurcha
         String departure    = requestParam.getRequestParam().getDeparture();
         String arrival      = requestParam.getRequestParam().getArrival();
 
-        List<PurchaseTicketPassengerDetailDTO> passengerSeatDetails = requestParam.getPassengerSeatDetails();
+        List<PurchaseTicketPassengerDetailDTO> passengerSeatDetails =
+                requestParam.getPassengerSeatDetails();
 
         List<String> trainCarriageList = seatService.listUsableCarriageNumber(
                 trainId,
@@ -65,7 +66,9 @@ public class TrainBusinessClassPurchaseTicketHandler extends AbstractTrainPurcha
                 trainCarriageList
         );
 
-        int remainingTicketSum = trainStationCarriageRemainingTicket.stream().mapToInt(Integer::intValue).sum();
+        int remainingTicketSum = trainStationCarriageRemainingTicket.stream()
+                .mapToInt(Integer::intValue)
+                .sum();
 
         if (remainingTicketSum < passengerSeatDetails.size())
             throw new ServiceException("站点余票不足，请尝试更换座位类型或选择其它站点");

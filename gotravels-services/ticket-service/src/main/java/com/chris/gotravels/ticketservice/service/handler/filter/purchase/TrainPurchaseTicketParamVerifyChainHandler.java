@@ -28,10 +28,13 @@ import static com.chris.gotravels.ticketservice.common.constant.RedisKeyConstant
 /**
  * 购票流程过滤器之验证参数是否有效
  * 验证参数有效这个流程会大量交互缓存，为了优化性能需要使用 Lua。为了方便大家理解流程，这里使用多次调用缓存
+ * <p>
+ * 购票过滤器的实现
  */
 @Component
 @RequiredArgsConstructor
-public class TrainPurchaseTicketParamVerifyChainHandler implements TrainPurchaseTicketChainFilter<PurchaseTicketReqDTO> {
+public class TrainPurchaseTicketParamVerifyChainHandler
+        implements TrainPurchaseTicketChainFilter<PurchaseTicketReqDTO> {
 
     private final TrainMapper trainMapper;
     private final TrainStationMapper trainStationMapper;
@@ -48,13 +51,13 @@ public class TrainPurchaseTicketParamVerifyChainHandler implements TrainPurchase
                 TimeUnit.DAYS
         );
 
-        if (Objects.isNull(trainDO)) {
+        if (Objects.isNull(trainDO))
             // 如果按照严谨逻辑，类似异常应该记录当前用户的 userid 并发送到风控中心
             // 如果一段时间有过几次的异常，直接封号处理。下述异常同理
             throw new ClientException("请检查车次是否存在");
-        }
 
-        // TODO，当前列车数据并没有通过定时任务每天生成最新的，所以需要隔离这个拦截。后期定时生成数据后删除该判断
+
+        // TODO 当前列车数据并没有通过定时任务每天生成最新的，所以需要隔离这个拦截。后期定时生成数据后删除该判断
         if (!EnvUtil.isDevEnvironment()) {
             // 查询车次是否已经发售
             if (new Date().before(trainDO.getSaleTime()))
@@ -68,7 +71,9 @@ public class TrainPurchaseTicketParamVerifyChainHandler implements TrainPurchase
         // 车站是否存在车次中，以及车站的顺序是否正确
         String trainStationStopoverDetailStr = distributedCache.safeGet(
                 TRAIN_STATION_STOPOVER_DETAIL + requestParam.getTrainId(),
+
                 String.class,
+
                 () -> {
                     LambdaQueryWrapper<TrainStationDO> queryWrapper = Wrappers.lambdaQuery(TrainStationDO.class)
                             .eq(TrainStationDO::getTrainId, requestParam.getTrainId())
@@ -80,7 +85,9 @@ public class TrainPurchaseTicketParamVerifyChainHandler implements TrainPurchase
                             ? JSON.toJSONString(actualTrainStationList)
                             : null;
                 },
+
                 GotravelsConstant.ADVANCE_TICKET_DAY,
+
                 TimeUnit.DAYS
         );
 
@@ -110,6 +117,7 @@ public class TrainPurchaseTicketParamVerifyChainHandler implements TrainPurchase
 
         if (index1 == -1 || index2 == -1)
             return false;
+
         return index2 >= index1;
     }
 }

@@ -34,13 +34,17 @@ public class CanalCommonSyncBinlogConsumer implements RocketMQListener<CanalBinl
 
     @Override
     public void onMessage(CanalBinlogEvent message) {
-        if (message.getIsDdl() ||
-                CollUtil.isEmpty(message.getOld()) ||
-                !Objects.equals("UPDATE", message.getType()) ||
-                !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog"))
+        // 如果是 DDL 返回
+        // 如果不是 UPDATE 类型数据变更返回
+        // 如果没有开启 binlog 数据同步模型返回
+        if (message.getIsDdl()
+                || CollUtil.isEmpty(message.getOld())
+                || !Objects.equals("UPDATE", message.getType())
+                || !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog"))
             return;
 
-
+        // 通过策略模式进行不同 Binlog 变更类型的监听，
+        // 比如，订单和座位两个表就分别有两个处理类
         abstractStrategyChoose.chooseAndExecute(
                 message.getTable(),
                 message,

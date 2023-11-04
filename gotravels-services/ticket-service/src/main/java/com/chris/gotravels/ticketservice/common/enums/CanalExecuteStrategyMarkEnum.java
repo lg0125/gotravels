@@ -30,17 +30,17 @@ public enum CanalExecuteStrategyMarkEnum {
 
     public static boolean isPatternMatch(String tableName) {
         return Arrays.stream(CanalExecuteStrategyMarkEnum.values())
-                .anyMatch(
-                        each -> StrUtil.isNotBlank(each.getPatternMatchTable()) &&
-                                Pattern.compile(each.getPatternMatchTable()).matcher(tableName).matches()
-                );
+                    .anyMatch(
+                            each -> StrUtil.isNotBlank(each.getPatternMatchTable())
+                                    && Pattern.compile(each.getPatternMatchTable()).matcher(tableName).matches()
+                    );
     }
 
     public static String getPatternMatch(String tableName) {
         return Arrays.stream(CanalExecuteStrategyMarkEnum.values())
-                .filter(each -> Objects.equals(tableName, each.getActualTable()))
-                .findFirst()
-                .map(CanalExecuteStrategyMarkEnum::getPatternMatchTable)
-                .orElse(null);
+                    .filter(each -> Objects.equals(tableName, each.getActualTable()))
+                    .findFirst()
+                    .map(CanalExecuteStrategyMarkEnum::getPatternMatchTable)
+                    .orElse(null);
     }
 }

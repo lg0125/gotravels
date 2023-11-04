@@ -11,6 +11,10 @@ import java.util.Objects;
 
 /**
  * 用户注册参数必填检验
+ * <p>
+ * 责任链模式 3——定义责任链业务具体处理器
+ * <p>
+ * 验证参数必填
  */
 @Component
 public class UserRegisterParamNotNullChainHandler
@@ -19,19 +23,33 @@ public class UserRegisterParamNotNullChainHandler
     @Override
     public void handler(UserRegisterReqDTO requestParam) {
         if (Objects.isNull(requestParam.getUsername()))
-            throw new ClientException(UserRegisterErrorCodeEnum.USER_NAME_NOTNULL);
+            throw new ClientException(
+                    UserRegisterErrorCodeEnum.USER_NAME_NOTNULL
+            );
         else if (Objects.isNull(requestParam.getPassword()))
-            throw new ClientException(UserRegisterErrorCodeEnum.PASSWORD_NOTNULL);
+            throw new ClientException(
+                    UserRegisterErrorCodeEnum.PASSWORD_NOTNULL
+            );
         else if (Objects.isNull(requestParam.getPhone()))
-            throw new ClientException(UserRegisterErrorCodeEnum.PHONE_NOTNULL);
+            throw new ClientException(
+                    UserRegisterErrorCodeEnum.PHONE_NOTNULL
+            );
         else if (Objects.isNull(requestParam.getIdType()))
-            throw new ClientException(UserRegisterErrorCodeEnum.ID_TYPE_NOTNULL);
+            throw new ClientException(
+                    UserRegisterErrorCodeEnum.ID_TYPE_NOTNULL
+            );
         else if (Objects.isNull(requestParam.getIdCard()))
-            throw new ClientException(UserRegisterErrorCodeEnum.ID_CARD_NOTNULL);
+            throw new ClientException(
+                    UserRegisterErrorCodeEnum.ID_CARD_NOTNULL
+            );
         else if (Objects.isNull(requestParam.getMail()))
-            throw new ClientException(UserRegisterErrorCodeEnum.MAIL_NOTNULL);
+            throw new ClientException(
+                    UserRegisterErrorCodeEnum.MAIL_NOTNULL
+            );
         else if (Objects.isNull(requestParam.getRealName()))
-            throw new ClientException(UserRegisterErrorCodeEnum.REAL_NAME_NOTNULL);
+            throw new ClientException(
+                    UserRegisterErrorCodeEnum.REAL_NAME_NOTNULL
+            );
     }
 
     @Override

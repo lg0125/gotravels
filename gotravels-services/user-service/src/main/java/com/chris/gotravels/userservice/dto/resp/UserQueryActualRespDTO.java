@@ -3,8 +3,7 @@ package com.chris.gotravels.userservice.dto.resp;
 import lombok.Data;
 
 /**
- * 用户查询返回无脱敏参数
-
+ * 用户查询返回无脱敏参数，不包含脱敏信息
  */
 @Data
 public class UserQueryActualRespDTO {

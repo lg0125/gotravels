@@ -64,7 +64,8 @@ public class TrainStationDetailJobHandler extends AbstractTrainStationJobHandler
                         .put("trainTag", each.getTrainTag())
                         .build();
 
-                StringRedisTemplate stringRedisTemplate = (StringRedisTemplate) distributedCache.getInstance();
+                StringRedisTemplate stringRedisTemplate =
+                        (StringRedisTemplate) distributedCache.getInstance();
 
                 String buildCacheKey = TRAIN_STATION_DETAIL + StrUtil.join(
                         "_",

@@ -201,7 +201,8 @@ public class OrderServiceImpl implements OrderService {
                     .trainPurchaseTicketResults(requestParam.getTicketOrderItems())
                     .build();
 
-            // 创建订单并支付后延时关闭订单消息怎么办？详情查看：https://nageoffer.com/12306/question
+            // 创建订单并支付后延时关闭订单消息怎么办？
+            // 调用自定义延迟关闭订单消息生产者发送延迟关闭订单消息
             SendResult sendResult = delayCloseOrderSendProduce.sendMessage(delayCloseOrderEvent);
             if (!Objects.equals(sendResult.getSendStatus(), SendStatus.SEND_OK))
                 throw new ServiceException("投递延迟关闭订单消息队列失败");
@@ -218,6 +219,8 @@ public class OrderServiceImpl implements OrderService {
         return orderSn;
     }
 
+    // 已经支付的订单肯定是不能被延时取消的，又不能去删除 RocketMQ 的延时消息
+    // 在业务上找寻一些突破口，比如：延时消息照常执行，执行前判断订单状态，如果是已支付，则直接返回成功不执行后续的取消逻辑
     @Override
     public boolean closeTickOrder(CancelTicketOrderReqDTO requestParam) {
         String orderSn = requestParam.getOrderSn();
@@ -226,12 +229,17 @@ public class OrderServiceImpl implements OrderService {
                 .eq(OrderDO::getOrderSn, orderSn)
                 .select(OrderDO::getStatus);
 
+        // 根据订单号获取订单
         OrderDO orderDO = orderMapper.selectOne(queryWrapper);
 
+        // 订单如果等于空或者订单状态不等于待支付返回 false
+        // 原来是订单取消前进行了状态判断，如果是非待支付的状态直接返回 false，就不会进行下面的流程
+        // 订单取消接口返回 false 之后，购票服务(ticket-service)判断返回值为 false 就不进行接下来的座位解锁、余票更新等操作
         if (Objects.isNull(orderDO) || orderDO.getStatus() != OrderStatusEnum.PENDING_PAYMENT.getStatus())
             return false;
 
         // 原则上订单关闭和订单取消这两个方法可以复用，为了区分未来考虑到的场景，这里对方法进行拆分但复用逻辑
+        // 订单状态等于待支付执行订单取消逻辑
         return cancelTickOrder(requestParam);
     }
 

@@ -68,13 +68,14 @@ public class RegionTrainStationJobHandler extends IJobHandler {
                             .eq(TrainStationRelationDO::getStartRegion, startRegion)
                             .eq(TrainStationRelationDO::getEndRegion, endRegion);
 
-                    List<TrainStationRelationDO> trainStationRelationDOList = trainStationRelationMapper.selectList(relationQueryWrapper);
+                    List<TrainStationRelationDO> trainStationRelationDOList =
+                            trainStationRelationMapper.selectList(relationQueryWrapper);
 
                     if (CollUtil.isEmpty(trainStationRelationDOList))
                         continue;
 
                     Set<ZSetOperations.TypedTuple<String>> tuples = new HashSet<>();
-                    for (TrainStationRelationDO item : trainStationRelationDOList) {
+                    for (var item : trainStationRelationDOList) {
 
                         String zSetKey = StrUtil.join(
                                 "_",
@@ -91,27 +92,31 @@ public class RegionTrainStationJobHandler extends IJobHandler {
                         tuples.add(tuple);
                     }
 
-                    StringRedisTemplate stringRedisTemplate = (StringRedisTemplate) distributedCache.getInstance();
+                    StringRedisTemplate stringRedisTemplate =
+                            (StringRedisTemplate) distributedCache.getInstance();
 
                     String buildCacheKey = REGION_TRAIN_STATION + StrUtil.join(
                             "_", startRegion, endRegion, dateTime
                     );
 
                     stringRedisTemplate.opsForZSet().add(
-                            buildCacheKey, tuples
+                            buildCacheKey,
+                            tuples
                     );
 
                     stringRedisTemplate.expire(
-                            buildCacheKey, ADVANCE_TICKET_DAY, TimeUnit.DAYS
+                            buildCacheKey,
+                            ADVANCE_TICKET_DAY,
+                            TimeUnit.DAYS
                     );
                 }
     }
 
     private String getJobRequestParam() {
         return EnvUtil.isDevEnvironment()
-                ? ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-                    .getRequest()
-                    .getHeader("requestParam")
-                : XxlJobHelper.getJobParam();
+                    ? ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                            .getRequest()
+                            .getHeader("requestParam")
+                    : XxlJobHelper.getJobParam();
     }
 }

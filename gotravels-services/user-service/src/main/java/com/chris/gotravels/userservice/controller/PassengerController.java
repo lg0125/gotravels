@@ -28,6 +28,8 @@ public class PassengerController {
 
     /**
      * 根据用户名查询乘车人列表
+     * <p>
+     * 根据用户名查询乘车人数据接口
      */
     @GetMapping("/api/user-service/passenger/query")
     public Result<List<PassengerRespDTO>> listPassengerQueryByUsername() {
@@ -71,6 +73,8 @@ public class PassengerController {
 
     /**
      * 修改乘车人
+     * <p>
+     * 修改乘车人相关信息接口
      */
     @Idempotent(
             uniqueKeyPrefix = "gotravels-user:lock_passenger-alter:",

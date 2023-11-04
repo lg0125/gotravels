@@ -65,10 +65,10 @@ public abstract class AbstractTrainStationJobHandlerTemplate extends IJobHandler
 
     private String getJobRequestParam() {
         return EnvUtil.isDevEnvironment()
-                ? Optional.ofNullable(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()))
-                    .map(ServletRequestAttributes::getRequest)
-                    .map(each -> each.getHeader("requestParam"))
-                    .orElse(null)
-                : XxlJobHelper.getJobParam();
+                    ? Optional.ofNullable(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()))
+                        .map(ServletRequestAttributes::getRequest)
+                        .map(each -> each.getHeader("requestParam"))
+                        .orElse(null)
+                    : XxlJobHelper.getJobParam();
     }
 }

@@ -5,11 +5,18 @@ import cn.hutool.core.util.StrUtil;
 import com.chris.gotravels.frameworks.convention.exception.ClientException;
 import com.chris.gotravels.ticketservice.dto.domain.PurchaseTicketPassengerDetailDTO;
 import com.chris.gotravels.ticketservice.dto.req.PurchaseTicketReqDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-
-public class TrainPurchaseTicketParamNotNullChainHandler implements TrainPurchaseTicketChainFilter<PurchaseTicketReqDTO>{
+/**
+ * 购票流程过滤器之验证参数必填
+ * <p>
+ * 购票过滤器的实现
+ * */
+@Component
+public class TrainPurchaseTicketParamNotNullChainHandler
+        implements TrainPurchaseTicketChainFilter<PurchaseTicketReqDTO>{
 
     @Override
     public void handler(PurchaseTicketReqDTO requestParam) {

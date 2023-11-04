@@ -12,8 +12,13 @@ import java.io.IOException;
  */
 public class PhoneDesensitizationSerializer extends JsonSerializer<String> {
     @Override
-    public void serialize(String phone, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(
+            String phone,
+            JsonGenerator jsonGenerator,
+            SerializerProvider serializerProvider) throws IOException {
+
         String phoneDesensitization = DesensitizedUtil.mobilePhone(phone);
+
         jsonGenerator.writeString(phoneDesensitization);
     }
 }

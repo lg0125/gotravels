@@ -12,10 +12,10 @@ import java.util.Date;
  * 乘车人实体
  */
 @Data
-@TableName("t_passenger")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@TableName("t_passenger")
 public class PassengerDO {
     /**
      * id

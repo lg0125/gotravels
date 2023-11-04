@@ -26,7 +26,8 @@ import java.util.Objects;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OrderCloseCacheAndTokenUpdateHandler implements AbstractExecuteStrategy<CanalBinlogEvent, Void> {
+public class OrderCloseCacheAndTokenUpdateHandler
+        implements AbstractExecuteStrategy<CanalBinlogEvent, Void> {
 
     private final TicketOrderRemoteService ticketOrderRemoteService;
     private final SeatService seatService;
@@ -42,21 +43,29 @@ public class OrderCloseCacheAndTokenUpdateHandler implements AbstractExecuteStra
         if (CollUtil.isEmpty(messageDataList))
             return;
 
-        for (Map<String, Object> each : messageDataList) {
+        for (var each : messageDataList) {
             Result<TicketOrderDetailRespDTO> orderDetailResult =
-                    ticketOrderRemoteService.queryTicketOrderByOrderSn(each.get("order_sn").toString());
+                    ticketOrderRemoteService.queryTicketOrderByOrderSn(
+                            each.get("order_sn").toString()
+                    );
 
             TicketOrderDetailRespDTO orderDetailResultData = orderDetailResult.getData();
 
             if (orderDetailResult.isSuccess() && orderDetailResultData != null) {
-                String trainId = String.valueOf(orderDetailResultData.getTrainId());
+                String trainId = String.valueOf(
+                        orderDetailResultData.getTrainId()
+                );
 
-                List<TicketOrderPassengerDetailRespDTO> passengerDetails = orderDetailResultData.getPassengerDetails();
+                List<TicketOrderPassengerDetailRespDTO> passengerDetails =
+                        orderDetailResultData.getPassengerDetails();
 
                 seatService.unlock(
                         trainId,
+
                         orderDetailResultData.getDeparture(),
+
                         orderDetailResultData.getArrival(),
+
                         BeanUtil.convert(
                                 passengerDetails,
                                 TrainPurchaseTicketRespDTO.class

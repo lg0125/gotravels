@@ -6,8 +6,11 @@ import com.chris.gotravels.ticketservice.dto.req.PurchaseTicketReqDTO;
 
 /**
  * 列车购买车票过滤器
+ * <p>
+ * 责任链模式——定义购票过滤接口
  */
-public interface TrainPurchaseTicketChainFilter<T extends PurchaseTicketReqDTO> extends AbstractChainHandler<PurchaseTicketReqDTO> {
+public interface TrainPurchaseTicketChainFilter<T extends PurchaseTicketReqDTO>
+        extends AbstractChainHandler<PurchaseTicketReqDTO> {
     @Override
     default String mark() {
         return TicketChainMarkEnum.TRAIN_PURCHASE_TICKET_FILTER.name();

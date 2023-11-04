@@ -11,6 +11,10 @@ import java.util.Date;
 
 /**
  * 乘车人返回参数
+ * <p>
+ * 前端调用 HTTP 请求获取数据时，
+ * SpringMVC 通过 Jackson 进行序列化数据时，
+ * 操作证件号码和手机号两个字段就会采用自定义序列化器，完成敏感信息脱敏功能
  */
 @Data
 @Accessors(chain = true)

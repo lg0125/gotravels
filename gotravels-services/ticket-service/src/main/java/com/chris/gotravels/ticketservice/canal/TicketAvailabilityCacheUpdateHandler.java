@@ -24,7 +24,8 @@ import static com.chris.gotravels.ticketservice.common.constant.RedisKeyConstant
  */
 @Component
 @RequiredArgsConstructor
-public class TicketAvailabilityCacheUpdateHandler implements AbstractExecuteStrategy<CanalBinlogEvent, Void> {
+public class TicketAvailabilityCacheUpdateHandler
+        implements AbstractExecuteStrategy<CanalBinlogEvent, Void> {
 
     private final DistributedCache distributedCache;
 
@@ -45,9 +46,10 @@ public class TicketAvailabilityCacheUpdateHandler implements AbstractExecuteStra
                 if (StrUtil.equalsAny(
                         currentDataMap.get("seat_status").toString(),
                         String.valueOf(SeatStatusEnum.AVAILABLE.getCode()),
-                        String.valueOf(SeatStatusEnum.LOCKED.getCode())
-                    )) {
+                        String.valueOf(SeatStatusEnum.LOCKED.getCode()))) {
+
                         actualOldDataList.add(oldDataMap);
+
                         messageDataList.add(currentDataMap);
                 }
             }
@@ -64,18 +66,19 @@ public class TicketAvailabilityCacheUpdateHandler implements AbstractExecuteStra
 
             String seatStatus = actualOldData.get("seat_status").toString();
 
-            int increment = Objects.equals(seatStatus, "0") ? -1 : 1;
+            int increment = Objects.equals(seatStatus, "0")
+                    ? -1
+                    : 1;
 
             String trainId      = each.get("train_id").toString();
             String hashCacheKey =
                     TRAIN_STATION_REMAINING_TICKET +
-                            trainId + "_" +
-                            each.get("start_station") + "_" +
-                            each.get("end_station");
+                    trainId + "_" +
+                    each.get("start_station") + "_" +
+                    each.get("end_station");
 
             Map<Integer, Integer> seatTypeMap = cacheChangeKeyMap.get(hashCacheKey);
-            if (CollUtil.isEmpty(seatTypeMap))
-                seatTypeMap = new HashMap<>();
+            if (CollUtil.isEmpty(seatTypeMap)) seatTypeMap = new HashMap<>();
 
             Integer seatType    = Integer.parseInt(each.get("seat_type").toString());
             Integer num         = seatTypeMap.get(seatType);
@@ -96,12 +99,11 @@ public class TicketAvailabilityCacheUpdateHandler implements AbstractExecuteStra
 
         cacheChangeKeyMap.forEach(
                 (cacheKey, cacheVal) -> cacheVal.forEach(
-                        (seatType, num) -> instance.opsForHash()
-                                            .increment(
-                                                    cacheKey,
-                                                    String.valueOf(seatType),
-                                                    num
-                                            )
+                        (seatType, num) -> instance.opsForHash().increment(
+                            cacheKey,
+                            String.valueOf(seatType),
+                            num
+                        )
                 )
         );
     }

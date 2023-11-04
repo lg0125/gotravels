@@ -17,11 +17,11 @@ public final class CacheUtil {
      */
     public static String buildKey(String... keys) {
         Stream.of(keys).forEach(
-                each -> Optional.ofNullable(Strings.emptyToNull(each))
-                                .orElseThrow(
-                                        () -> new RuntimeException("构建缓存 key 不允许为空")
-                                )
+                each -> Optional.ofNullable(Strings.emptyToNull(each)).orElseThrow(
+                            () -> new RuntimeException("构建缓存 key 不允许为空")
+                )
         );
+
         return Joiner.on(SPLICING_OPERATOR).join(keys);
     }
 
@@ -29,6 +29,7 @@ public final class CacheUtil {
      * 判断结果是否为空或空的字符串
      */
     public static boolean isNullOrBlank(Object cacheVal) {
-        return cacheVal == null || (cacheVal instanceof String && Strings.isNullOrEmpty((String) cacheVal));
+        return cacheVal == null
+                || (cacheVal instanceof String && Strings.isNullOrEmpty((String) cacheVal));
     }
 }

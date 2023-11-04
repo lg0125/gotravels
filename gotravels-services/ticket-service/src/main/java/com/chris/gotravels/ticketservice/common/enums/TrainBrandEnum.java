@@ -40,10 +40,10 @@ public enum TrainBrandEnum {
      */
     public static String findNameByCode(String code) {
         return Arrays.stream(TrainBrandEnum.values())
-                .filter(each -> Objects.equals(each.getCode(), code))
-                .findFirst()
-                .map(TrainBrandEnum::getName)
-                .orElse(null);
+                    .filter(each -> Objects.equals(each.getCode(), code))
+                    .findFirst()
+                    .map(TrainBrandEnum::getName)
+                    .orElse(null);
     }
 
     /**
@@ -51,12 +51,12 @@ public enum TrainBrandEnum {
      */
     public static List<String> findNameByCode(List<String> codes) {
         List<String> resultNames = new ArrayList<>();
-        for (String code : codes) {
+        for (var code : codes) {
             String name = Arrays.stream(TrainBrandEnum.values())
-                    .filter(each -> Objects.equals(each.getCode(), code))
-                    .findFirst()
-                    .map(TrainBrandEnum::getName)
-                    .orElse(null);
+                            .filter(each -> Objects.equals(each.getCode(), code))
+                            .findFirst()
+                            .map(TrainBrandEnum::getName)
+                            .orElse(null);
 
             if (StrUtil.isNotBlank(name))
                 resultNames.add(name);

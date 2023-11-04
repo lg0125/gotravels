@@ -7,6 +7,12 @@ import java.lang.annotation.*;
 
 /**
  * 幂等注解
+ * <p>
+ * 提供一种通用的幂等注解，该注解可用于 RestAPI 和消息队列消息防重复场景
+ * <p>
+ * 为解决消息队列中的重复消费问题，可以设计一套通用的消息队列幂等组件
+ * 这个组件可以被各个应用程序使用，以确保它们的消费逻辑是幂等的
+ *
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

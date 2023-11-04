@@ -14,8 +14,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * 缓存配置自动装配
  */
 @AllArgsConstructor
-@EnableConfigurationProperties({RedisDistributedProperties.class, BloomFilterPenetrateProperties.class})
+@EnableConfigurationProperties({
+        RedisDistributedProperties.class,
+        BloomFilterPenetrateProperties.class
+})
 public class CacheAutoConfiguration {
+
     private final RedisDistributedProperties redisDistributedProperties;
 
     /**
@@ -23,28 +27,53 @@ public class CacheAutoConfiguration {
      */
     @Bean
     public RedisKeySerializer redisKeySerializer() {
-        String prefix = redisDistributedProperties.getPrefix();
-        String prefixCharset = redisDistributedProperties.getPrefixCharset();
-        return new RedisKeySerializer(prefix, prefixCharset);
+        String prefix           = redisDistributedProperties.getPrefix();
+        String prefixCharset    = redisDistributedProperties.getPrefixCharset();
+
+        return new RedisKeySerializer(
+                    prefix,
+                    prefixCharset
+        );
     }
 
     /**
      * 防止缓存穿透的布隆过滤器
      */
     @Bean
-    @ConditionalOnProperty(prefix = BloomFilterPenetrateProperties.PREFIX, name = "enabled", havingValue = "true")
-    public RBloomFilter<String> cachePenetrationBloomFilter(RedissonClient redissonClient, BloomFilterPenetrateProperties bloomFilterPenetrateProperties) {
-        RBloomFilter<String> cachePenetrationBloomFilter = redissonClient.getBloomFilter(bloomFilterPenetrateProperties.getName());
-        cachePenetrationBloomFilter.tryInit(bloomFilterPenetrateProperties.getExpectedInsertions(), bloomFilterPenetrateProperties.getFalseProbability());
+    @ConditionalOnProperty(
+            prefix = BloomFilterPenetrateProperties.PREFIX,
+            name = "enabled",
+            havingValue = "true"
+    )
+    public RBloomFilter<String> cachePenetrationBloomFilter(
+            RedissonClient redissonClient,
+            BloomFilterPenetrateProperties bloomFilterPenetrateProperties) {
+
+        RBloomFilter<String> cachePenetrationBloomFilter = redissonClient.getBloomFilter(
+                bloomFilterPenetrateProperties.getName()
+        );
+
+        cachePenetrationBloomFilter.tryInit(
+                bloomFilterPenetrateProperties.getExpectedInsertions(),
+                bloomFilterPenetrateProperties.getFalseProbability()
+        );
+
         return cachePenetrationBloomFilter;
     }
 
     @Bean
     // 静态代理模式: Redis 客户端代理类增强
-    public StringRedisTemplateProxy stringRedisTemplateProxy(RedisKeySerializer redisKeySerializer,
-                                                             StringRedisTemplate stringRedisTemplate,
-                                                             RedissonClient redissonClient) {
+    public StringRedisTemplateProxy stringRedisTemplateProxy(
+            RedisKeySerializer redisKeySerializer,
+            StringRedisTemplate stringRedisTemplate,
+            RedissonClient redissonClient) {
+
         stringRedisTemplate.setKeySerializer(redisKeySerializer);
-        return new StringRedisTemplateProxy(stringRedisTemplate, redisDistributedProperties, redissonClient);
+
+        return new StringRedisTemplateProxy(
+                stringRedisTemplate,
+                redisDistributedProperties,
+                redissonClient
+        );
     }
 }

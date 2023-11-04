@@ -20,17 +20,46 @@ public enum VehicleTypeEnum {
     /**
      * 高铁
      */
-    HIGH_SPEED_RAIN(0, "HIGH_SPEED_RAIN", "高铁", ListUtil.of(BUSINESS_CLASS.getCode(), FIRST_CLASS.getCode(), SECOND_CLASS.getCode())),
+    HIGH_SPEED_RAIN(
+            0,
+            "HIGH_SPEED_RAIN",
+            "高铁",
+            ListUtil.of(
+                    BUSINESS_CLASS.getCode(),
+                    FIRST_CLASS.getCode(),
+                    SECOND_CLASS.getCode()
+            )
+    ),
 
     /**
      * 动车
      */
-    BULLET(1, "BULLET", "动车", ListUtil.of(SECOND_CLASS_CABIN_SEAT.getCode(), FIRST_SLEEPER.getCode(), SECOND_SLEEPER.getCode(), NO_SEAT_SLEEPER.getCode())),
+    BULLET(
+            1,
+            "BULLET",
+            "动车",
+            ListUtil.of(
+                    SECOND_CLASS_CABIN_SEAT.getCode(),
+                    FIRST_SLEEPER.getCode(),
+                    SECOND_SLEEPER.getCode(),
+                    NO_SEAT_SLEEPER.getCode()
+            )
+    ),
 
     /**
      * 普通车
      */
-    REGULAR_TRAIN(2, "REGULAR_TRAIN", "普通车", ListUtil.of(SOFT_SLEEPER.getCode(), HARD_SLEEPER.getCode(), HARD_SEAT.getCode(), NO_SEAT_SLEEPER.getCode())),
+    REGULAR_TRAIN(
+            2,
+            "REGULAR_TRAIN",
+            "普通车",
+            ListUtil.of(
+                    SOFT_SLEEPER.getCode(),
+                    HARD_SLEEPER.getCode(),
+                    HARD_SEAT.getCode(),
+                    NO_SEAT_SLEEPER.getCode()
+            )
+    ),
 
     /**
      * 汽车
@@ -55,10 +84,10 @@ public enum VehicleTypeEnum {
      */
     public static String findNameByCode(Integer code) {
         return Arrays.stream(VehicleTypeEnum.values())
-                .filter(each -> Objects.equals(each.getCode(), code))
-                .findFirst()
-                .map(VehicleTypeEnum::getName)
-                .orElse(null);
+                    .filter(each -> Objects.equals(each.getCode(), code))
+                    .findFirst()
+                    .map(VehicleTypeEnum::getName)
+                    .orElse(null);
     }
 
     /**
@@ -66,9 +95,9 @@ public enum VehicleTypeEnum {
      */
     public static List<Integer> findSeatTypesByCode(Integer code) {
         return Arrays.stream(VehicleTypeEnum.values())
-                .filter(each -> Objects.equals(each.getCode(), code))
-                .findFirst()
-                .map(VehicleTypeEnum::getSeatTypes)
-                .orElse(null);
+                    .filter(each -> Objects.equals(each.getCode(), code))
+                    .findFirst()
+                    .map(VehicleTypeEnum::getSeatTypes)
+                    .orElse(null);
     }
 }

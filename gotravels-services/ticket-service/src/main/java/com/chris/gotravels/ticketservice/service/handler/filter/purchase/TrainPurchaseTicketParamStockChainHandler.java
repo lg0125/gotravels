@@ -19,10 +19,13 @@ import static com.chris.gotravels.ticketservice.common.constant.RedisKeyConstant
 
 /**
  * 购票流程过滤器之验证列车站点库存是否充足
+ * <p>
+ * 购票过滤器的实现
  */
 @Component
 @RequiredArgsConstructor
-public class TrainPurchaseTicketParamStockChainHandler implements TrainPurchaseTicketChainFilter<PurchaseTicketReqDTO> {
+public class TrainPurchaseTicketParamStockChainHandler
+        implements TrainPurchaseTicketChainFilter<PurchaseTicketReqDTO> {
 
     private final SeatMarginCacheLoader seatMarginCacheLoader;
     private final DistributedCache distributedCache;
@@ -30,6 +33,7 @@ public class TrainPurchaseTicketParamStockChainHandler implements TrainPurchaseT
     @Override
     public void handler(PurchaseTicketReqDTO requestParam) {
         // 车次站点是否还有余票。如果用户提交多个乘车人非同一座位类型，拆分验证
+
         String keySuffix = StrUtil.join(
                 "_",
                 requestParam.getTrainId(),
@@ -42,10 +46,15 @@ public class TrainPurchaseTicketParamStockChainHandler implements TrainPurchaseT
         List<PurchaseTicketPassengerDetailDTO> passengerDetails = requestParam.getPassengers();
 
         Map<Integer, List<PurchaseTicketPassengerDetailDTO>> seatTypeMap = passengerDetails.stream()
-                .collect(Collectors.groupingBy(PurchaseTicketPassengerDetailDTO::getSeatType));
+                .collect(
+                        Collectors.groupingBy(PurchaseTicketPassengerDetailDTO::getSeatType)
+                );
 
         seatTypeMap.forEach((seatType, passengerSeatDetails) -> {
-            Object stockObj = stringRedisTemplate.opsForHash().get(TRAIN_STATION_REMAINING_TICKET + keySuffix, String.valueOf(seatType));
+            Object stockObj = stringRedisTemplate.opsForHash().get(
+                    TRAIN_STATION_REMAINING_TICKET + keySuffix,
+                    String.valueOf(seatType)
+            );
 
             int stock = Optional.ofNullable(stockObj)
                     .map(each -> Integer.parseInt(each.toString()))

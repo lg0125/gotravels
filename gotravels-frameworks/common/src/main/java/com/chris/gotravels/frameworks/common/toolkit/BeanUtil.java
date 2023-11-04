@@ -34,8 +34,9 @@ public class BeanUtil {
      * @return          转换后对象
      */
     public static <T, S> T convert(S source, T target) {
-        Optional.ofNullable(source)
-                .ifPresent(each -> BEAN_MAPPER_BUILDER.map(each, target));
+        Optional.ofNullable(source).ifPresent(
+                each -> BEAN_MAPPER_BUILDER.map(each, target)
+        );
 
         return target;
     }

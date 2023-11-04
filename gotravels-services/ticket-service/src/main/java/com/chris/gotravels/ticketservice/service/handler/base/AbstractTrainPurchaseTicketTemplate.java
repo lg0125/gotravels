@@ -40,31 +40,32 @@ public abstract class AbstractTrainPurchaseTicketTemplate
 
     protected TrainSeatBaseDTO buildTrainSeatBaseDTO(SelectSeatDTO requestParam) {
         return TrainSeatBaseDTO.builder()
-                .trainId(requestParam.getRequestParam().getTrainId())
-                .departure(requestParam.getRequestParam().getDeparture())
-                .arrival(requestParam.getRequestParam().getArrival())
-                .chooseSeatList(requestParam.getRequestParam().getChooseSeats())
-                .passengerSeatDetails(requestParam.getPassengerSeatDetails())
-                .build();
+                    .trainId(requestParam.getRequestParam().getTrainId())
+                    .departure(requestParam.getRequestParam().getDeparture())
+                    .arrival(requestParam.getRequestParam().getArrival())
+                    .chooseSeatList(requestParam.getRequestParam().getChooseSeats())
+                    .passengerSeatDetails(requestParam.getPassengerSeatDetails())
+                    .build();
     }
 
     @Override
     public List<TrainPurchaseTicketRespDTO> executeResp(SelectSeatDTO requestParam) {
+        // 根据乘车人选择对应座位
         List<TrainPurchaseTicketRespDTO> actualResult = selectSeats(requestParam);
 
         // 扣减车厢余票缓存，扣减站点余票缓存
-        if (CollUtil.isNotEmpty(actualResult) && !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog")) {
-            String trainId = requestParam.getRequestParam().getTrainId();
+        if (CollUtil.isNotEmpty(actualResult)
+                && !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog")) {
 
-            String departure = requestParam.getRequestParam().getDeparture();
+            String trainId      = requestParam.getRequestParam().getTrainId();
+            String departure    = requestParam.getRequestParam().getDeparture();
+            String arrival      = requestParam.getRequestParam().getArrival();
 
-            String arrival = requestParam.getRequestParam().getArrival();
+            StringRedisTemplate stringRedisTemplate =
+                    (StringRedisTemplate) distributedCache.getInstance();
 
-            StringRedisTemplate stringRedisTemplate = (StringRedisTemplate) distributedCache.getInstance();
-
-            List<RouteDTO> routeDTOList = trainStationService.listTakeoutTrainStationRoute(
-                    trainId, departure, arrival
-            );
+            List<RouteDTO> routeDTOList =
+                    trainStationService.listTakeoutTrainStationRoute(trainId, departure, arrival);
 
             routeDTOList.forEach(each -> {
                 String keySuffix = StrUtil.join(
@@ -73,6 +74,7 @@ public abstract class AbstractTrainPurchaseTicketTemplate
                         each.getEndStation()
                 );
 
+                // 扣减列车对应站点的对应座位类型余量
                 stringRedisTemplate.opsForHash().increment(
                         TRAIN_STATION_REMAINING_TICKET + keySuffix,
                         String.valueOf(requestParam.getSeatType()),
@@ -86,12 +88,19 @@ public abstract class AbstractTrainPurchaseTicketTemplate
 
     @Override
     public void run(String... args) throws Exception {
-        distributedCache = ApplicationContextHolder.getBean(DistributedCache.class);
+        distributedCache =
+                ApplicationContextHolder.getBean(DistributedCache.class);
 
-        trainStationService = ApplicationContextHolder.getBean(TrainStationService.class);
+        trainStationService =
+                ApplicationContextHolder.getBean(TrainStationService.class);
 
-        ConfigurableEnvironment configurableEnvironment = ApplicationContextHolder.getBean(ConfigurableEnvironment.class);
+        ConfigurableEnvironment configurableEnvironment =
+                ApplicationContextHolder.getBean(ConfigurableEnvironment.class);
 
-        ticketAvailabilityCacheUpdateType = configurableEnvironment.getProperty("ticket.availability.cache-update.type", "");
+        ticketAvailabilityCacheUpdateType =
+                configurableEnvironment.getProperty(
+                        "ticket.availability.cache-update.type",
+                        ""
+                );
     }
 }
