@@ -49,11 +49,12 @@ public class PayResultCallbackOrderConsumer
     public void onMessage(MessageWrapper<PayResultCallbackOrderEvent> message) {
         PayResultCallbackOrderEvent payResultCallbackOrderEvent = message.getMessage();
 
-        OrderStatusReversalDTO orderStatusReversalDTO = OrderStatusReversalDTO.builder()
-                .orderSn(payResultCallbackOrderEvent.getOrderSn())
-                .orderStatus(OrderStatusEnum.ALREADY_PAID.getStatus())
-                .orderItemStatus(OrderItemStatusEnum.ALREADY_PAID.getStatus())
-                .build();
+        OrderStatusReversalDTO orderStatusReversalDTO =
+                OrderStatusReversalDTO.builder()
+                    .orderSn(payResultCallbackOrderEvent.getOrderSn())
+                    .orderStatus(OrderStatusEnum.ALREADY_PAID.getStatus())
+                    .orderItemStatus(OrderItemStatusEnum.ALREADY_PAID.getStatus())
+                    .build();
 
         orderService.statusReversal(orderStatusReversalDTO);
 
