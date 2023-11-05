@@ -53,18 +53,30 @@ public class TrainStationServiceImpl implements TrainStationService {
         );
     }
 
+    /**
+     * 扣减余票
+     * <p>
+     * 逻辑
+     *      锁定数据库的列车座位车票状态记录，从可售状态变更为锁定状态
+     *      将缓存中的座位余量进行扣减，卖出去一个自减一，卖出去两个自减二
+     * <p>
+     * 1. 更新列车座位车票状态
+     *      1.1 获得列车 ID、出发站、到达站以及乘车人和对应的座位信息
+     * */
     @Override
     public List<RouteDTO> listTakeoutTrainStationRoute(String trainId, String departure, String arrival) {
         LambdaQueryWrapper<TrainStationDO> queryWrapper = Wrappers.lambdaQuery(TrainStationDO.class)
                 .eq(TrainStationDO::getTrainId, trainId)
                 .select(TrainStationDO::getDeparture);
 
+        // 获取列车所有站点，通过所有站点计算需要锁定座位的站点集合
         List<TrainStationDO> trainStationDOList = trainStationMapper.selectList(queryWrapper);
 
         List<String> trainStationAllList = trainStationDOList.stream()
                 .map(TrainStationDO::getDeparture)
                 .collect(Collectors.toList());
 
+        // 根据工具类计算需要扣减沿途关联的站点
         return StationCalculateUtil.takeoutStation(
                     trainStationAllList,
                     departure,

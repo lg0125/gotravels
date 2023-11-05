@@ -74,21 +74,25 @@ public final class DelayCloseOrderConsumer
                 JSON.toJSONString(delayCloseOrderEventMessageWrapper)
         );
 
-        DelayCloseOrderEvent delayCloseOrderEvent = delayCloseOrderEventMessageWrapper.getMessage();
+        DelayCloseOrderEvent delayCloseOrderEvent =
+                delayCloseOrderEventMessageWrapper.getMessage();
 
         String orderSn = delayCloseOrderEvent.getOrderSn();
 
         Result<Boolean> closedTickOrder;
         try {
             // 调用订单服务修改订单相关状态，比如将待支付变更为已取消
-            closedTickOrder = ticketOrderRemoteService.closeTickOrder(new CancelTicketOrderReqDTO(orderSn));
+            closedTickOrder =
+                    ticketOrderRemoteService.closeTickOrder(new CancelTicketOrderReqDTO(orderSn));
         } catch (Throwable ex) {
             log.error("[延迟关闭订单] 订单号：{} 远程调用订单服务失败", orderSn, ex);
             throw ex;
         }
 
         // 订单取消成功没有报错并且返回标识也是成功
-        if (closedTickOrder.isSuccess() && closedTickOrder.getData() && !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog")) {
+        if (closedTickOrder.isSuccess()
+                && closedTickOrder.getData()
+                && !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog")) {
 
             String trainId                                              = delayCloseOrderEvent.getTrainId();
             String departure                                            = delayCloseOrderEvent.getDeparture();
@@ -108,12 +112,15 @@ public final class DelayCloseOrderConsumer
             }
 
             try {
-                StringRedisTemplate stringRedisTemplate = (StringRedisTemplate) distributedCache.getInstance();
+                StringRedisTemplate stringRedisTemplate =
+                        (StringRedisTemplate) distributedCache.getInstance();
 
-                Map<Integer, List<TrainPurchaseTicketRespDTO>> seatTypeMap = trainPurchaseTicketResults.stream()
-                        .collect(Collectors.groupingBy(TrainPurchaseTicketRespDTO::getSeatType));
+                Map<Integer, List<TrainPurchaseTicketRespDTO>> seatTypeMap =
+                        trainPurchaseTicketResults.stream()
+                                .collect(Collectors.groupingBy(TrainPurchaseTicketRespDTO::getSeatType));
 
-                List<RouteDTO> routeDTOList = trainStationService.listTakeoutTrainStationRoute(trainId, departure, arrival);
+                List<RouteDTO> routeDTOList =
+                        trainStationService.listTakeoutTrainStationRoute(trainId, departure, arrival);
 
                 routeDTOList.forEach(each -> {
                     String keySuffix = StrUtil.join(
@@ -138,9 +145,11 @@ public final class DelayCloseOrderConsumer
                         TicketOrderDetailRespDTO.class
                 );
 
-                ticketOrderDetail.setPassengerDetails(BeanUtil.convert(
-                        delayCloseOrderEvent.getTrainPurchaseTicketResults(),
-                        TicketOrderPassengerDetailRespDTO.class)
+                ticketOrderDetail.setPassengerDetails(
+                        BeanUtil.convert(
+                            delayCloseOrderEvent.getTrainPurchaseTicketResults(),
+                            TicketOrderPassengerDetailRespDTO.class
+                        )
                 );
 
                 // 回退订单中乘车人购买车座类型的令牌限流数量

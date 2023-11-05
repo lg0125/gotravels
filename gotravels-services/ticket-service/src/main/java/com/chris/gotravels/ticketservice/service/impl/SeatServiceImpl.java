@@ -122,6 +122,18 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, SeatDO> implements 
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 扣减余票
+     * <p>
+     * 逻辑
+     *      锁定数据库的列车座位车票状态记录，从可售状态变更为锁定状态
+     *      将缓存中的座位余量进行扣减，卖出去一个自减一，卖出去两个自减二
+     * <p>
+     * 1. 更新列车座位车票状态
+     *      1.2 通过出发站和到达站计算出都需要改变哪些站点的座位状态
+     * <p>
+     * 经过 lockSeat 方法就可以锁定出发站点和到达站点沿途各站对应的座位状态，从可售变更为锁定
+     * */
     @Override
     public void lockSeat(
             String trainId,

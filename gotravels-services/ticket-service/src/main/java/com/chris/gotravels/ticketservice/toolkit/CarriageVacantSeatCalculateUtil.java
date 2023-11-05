@@ -46,8 +46,8 @@ public final class CarriageVacantSeatCalculateUtil {
      * 空余座位统计方法
      *
      * @param actualSeats 座位状态数组
-     * @param n
-     * @param m
+     * @param n           列数
+     * @param m           行数
      * @return 空余座位集合
      */
     public static List<Pair<Integer, Integer>> buildCarriageVacantSeatList2(int[][] actualSeats, int n, int m) {

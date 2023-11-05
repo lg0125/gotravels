@@ -23,7 +23,8 @@ import java.util.Optional;
  */
 public abstract class AbstractTrainStationJobHandlerTemplate extends IJobHandler {
     /**
-     * 模板方法模式具体实现子类执行定时任务
+     * 模板方法模式
+     * 具体实现子类执行定时任务
      *
      * @param trainDOPageRecords 列车信息分页记录
      */
@@ -33,13 +34,11 @@ public abstract class AbstractTrainStationJobHandlerTemplate extends IJobHandler
     public void execute() {
         var currentPage     = 1L;
         var size            = 1000L;
-        var requestParam    = getJobRequestParam();
 
-        var dateTime = StrUtil.isNotBlank(requestParam)
+        var requestParam    = getJobRequestParam();
+        var dateTime        = StrUtil.isNotBlank(requestParam)
                 ? DateUtil.parse(requestParam, "yyyy-MM-dd")
                 : DateUtil.tomorrow();
-
-        var trainMapper = ApplicationContextHolder.getBean(TrainMapper.class);
 
         for (; ; currentPage++) {
             var queryWrapper = Wrappers.lambdaQuery(TrainDO.class)
@@ -49,6 +48,7 @@ public abstract class AbstractTrainStationJobHandlerTemplate extends IJobHandler
                             DateUtil.endOfDay(dateTime)
                     );
 
+            var trainMapper = ApplicationContextHolder.getBean(TrainMapper.class);
             var trainDOPage = trainMapper.selectPage(
                     new Page<>(currentPage, size),
                     queryWrapper
@@ -66,9 +66,9 @@ public abstract class AbstractTrainStationJobHandlerTemplate extends IJobHandler
     private String getJobRequestParam() {
         return EnvUtil.isDevEnvironment()
                     ? Optional.ofNullable(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()))
-                        .map(ServletRequestAttributes::getRequest)
-                        .map(each -> each.getHeader("requestParam"))
-                        .orElse(null)
+                            .map(ServletRequestAttributes::getRequest)
+                            .map(each -> each.getHeader("requestParam"))
+                            .orElse(null)
                     : XxlJobHelper.getJobParam();
     }
 }

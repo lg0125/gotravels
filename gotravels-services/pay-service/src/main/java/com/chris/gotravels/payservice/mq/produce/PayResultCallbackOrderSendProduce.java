@@ -21,7 +21,8 @@ import java.util.UUID;
  */
 @Slf4j
 @Component
-public class PayResultCallbackOrderSendProduce extends AbstractCommonSendProduceTemplate<PayResultCallbackOrderEvent> {
+public class PayResultCallbackOrderSendProduce
+        extends AbstractCommonSendProduceTemplate<PayResultCallbackOrderEvent> {
 
     private final ConfigurableEnvironment environment;
 
@@ -37,12 +38,12 @@ public class PayResultCallbackOrderSendProduce extends AbstractCommonSendProduce
     @Override
     protected BaseSendExtendDTO buildBaseSendExtendParam(PayResultCallbackOrderEvent messageSendEvent) {
         return BaseSendExtendDTO.builder()
-                .eventName("支付结果回调订单")
-                .keys(messageSendEvent.getOrderSn())
-                .topic(environment.resolvePlaceholders(PayRocketMQConstant.PAY_GLOBAL_TOPIC_KEY))
-                .tag(environment.resolvePlaceholders(PayRocketMQConstant.PAY_RESULT_CALLBACK_TAG_KEY))
-                .sentTimeout(2000L)
-                .build();
+                    .eventName("支付结果回调订单")
+                    .keys(messageSendEvent.getOrderSn())
+                    .topic(environment.resolvePlaceholders(PayRocketMQConstant.PAY_GLOBAL_TOPIC_KEY))
+                    .tag(environment.resolvePlaceholders(PayRocketMQConstant.PAY_RESULT_CALLBACK_TAG_KEY))
+                    .sentTimeout(2000L)
+                    .build();
     }
 
     @SuppressWarnings("unchecked")
@@ -55,10 +56,9 @@ public class PayResultCallbackOrderSendProduce extends AbstractCommonSendProduce
                 ? UUID.randomUUID().toString()
                 : requestParam.getKeys();
 
-        return MessageBuilder
-                .withPayload(new MessageWrapper(requestParam.getKeys(), messageSendEvent))
-                .setHeader(MessageConst.PROPERTY_KEYS, keys)
-                .setHeader(MessageConst.PROPERTY_TAGS, requestParam.getTag())
-                .build();
+        return MessageBuilder.withPayload(new MessageWrapper(requestParam.getKeys(), messageSendEvent))
+                    .setHeader(MessageConst.PROPERTY_KEYS, keys)
+                    .setHeader(MessageConst.PROPERTY_TAGS, requestParam.getTag())
+                    .build();
     }
 }

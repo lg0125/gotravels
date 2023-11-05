@@ -25,7 +25,8 @@ import java.util.Objects;
         topic = TicketRocketMQConstant.CANAL_COMMON_SYNC_TOPIC_KEY,
         consumerGroup = TicketRocketMQConstant.CANAL_COMMON_SYNC_CG_KEY
 )
-public class CanalCommonSyncBinlogConsumer implements RocketMQListener<CanalBinlogEvent> {
+public class CanalCommonSyncBinlogConsumer
+        implements RocketMQListener<CanalBinlogEvent> {
 
     private final AbstractStrategyChoose abstractStrategyChoose;
 

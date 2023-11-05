@@ -23,7 +23,8 @@ import static com.chris.gotravels.payservice.common.constant.PayRocketMQConstant
  */
 @Slf4j
 @Component
-public class RefundResultCallbackOrderSendProduce extends AbstractCommonSendProduceTemplate<RefundResultCallbackOrderEvent> {
+public class RefundResultCallbackOrderSendProduce
+        extends AbstractCommonSendProduceTemplate<RefundResultCallbackOrderEvent> {
     private final ConfigurableEnvironment environment;
 
     public RefundResultCallbackOrderSendProduce(
@@ -38,26 +39,27 @@ public class RefundResultCallbackOrderSendProduce extends AbstractCommonSendProd
     @Override
     protected BaseSendExtendDTO buildBaseSendExtendParam(RefundResultCallbackOrderEvent messageSendEvent) {
         return BaseSendExtendDTO.builder()
-                .eventName("全部退款或部分退款结果回调订单")
-                .keys(messageSendEvent.getOrderSn())
-                .topic(environment.resolvePlaceholders(PAY_GLOBAL_TOPIC_KEY))
-                .tag(environment.resolvePlaceholders(REFUND_RESULT_CALLBACK_TAG_KEY))
-                .sentTimeout(2000L)
-                .build();
+                    .eventName("全部退款或部分退款结果回调订单")
+                    .keys(messageSendEvent.getOrderSn())
+                    .topic(environment.resolvePlaceholders(PAY_GLOBAL_TOPIC_KEY))
+                    .tag(environment.resolvePlaceholders(REFUND_RESULT_CALLBACK_TAG_KEY))
+                    .sentTimeout(2000L)
+                    .build();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Message<?> buildMessage(RefundResultCallbackOrderEvent messageSendEvent, BaseSendExtendDTO requestParam) {
+    protected Message<?> buildMessage(
+            RefundResultCallbackOrderEvent messageSendEvent,
+            BaseSendExtendDTO requestParam) {
 
         String keys = StrUtil.isEmpty(requestParam.getKeys())
                 ? UUID.randomUUID().toString()
                 : requestParam.getKeys();
 
-        return MessageBuilder
-                .withPayload(new MessageWrapper(requestParam.getKeys(), messageSendEvent))
-                .setHeader(MessageConst.PROPERTY_KEYS, keys)
-                .setHeader(MessageConst.PROPERTY_TAGS, requestParam.getTag())
-                .build();
+        return MessageBuilder.withPayload(new MessageWrapper(requestParam.getKeys(), messageSendEvent))
+                    .setHeader(MessageConst.PROPERTY_KEYS, keys)
+                    .setHeader(MessageConst.PROPERTY_TAGS, requestParam.getTag())
+                    .build();
     }
 }

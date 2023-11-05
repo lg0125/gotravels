@@ -37,9 +37,8 @@ public abstract class AbstractCommonSendProduceTemplate<T> {
      * 消息事件通用发送
      *
      * @param messageSendEvent 消息发送事件
-     * @return 消息发送返回结果
      */
-    public SendResult sendMessage(T messageSendEvent) {
+    public void sendMessage(T messageSendEvent) {
 
         BaseSendExtendDTO baseSendExtendDTO = buildBaseSendExtendParam(messageSendEvent);
 
@@ -73,6 +72,5 @@ public abstract class AbstractCommonSendProduceTemplate<T> {
 
             throw ex;
         }
-        return sendResult;
     }
 }

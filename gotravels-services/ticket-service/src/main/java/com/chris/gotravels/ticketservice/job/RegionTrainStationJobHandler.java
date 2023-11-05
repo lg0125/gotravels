@@ -47,10 +47,11 @@ public class RegionTrainStationJobHandler extends IJobHandler {
     @GetMapping("/api/ticket-service/region-train-station/job/cache-init/execute")
     @Override
     public void execute() {
-        List<String> regionList = regionMapper.selectList(Wrappers.emptyWrapper())
-                .stream()
-                .map(RegionDO::getName)
-                .toList();
+        List<String> regionList =
+                regionMapper.selectList(Wrappers.emptyWrapper())
+                        .stream()
+                        .map(RegionDO::getName)
+                        .toList();
 
         String requestParam = getJobRequestParam();
 
@@ -64,9 +65,10 @@ public class RegionTrainStationJobHandler extends IJobHandler {
                     String startRegion  = regionList.get(i);
                     String endRegion    = regionList.get(j);
 
-                    LambdaQueryWrapper<TrainStationRelationDO> relationQueryWrapper = Wrappers.lambdaQuery(TrainStationRelationDO.class)
-                            .eq(TrainStationRelationDO::getStartRegion, startRegion)
-                            .eq(TrainStationRelationDO::getEndRegion, endRegion);
+                    LambdaQueryWrapper<TrainStationRelationDO> relationQueryWrapper =
+                            Wrappers.lambdaQuery(TrainStationRelationDO.class)
+                                .eq(TrainStationRelationDO::getStartRegion, startRegion)
+                                .eq(TrainStationRelationDO::getEndRegion, endRegion);
 
                     List<TrainStationRelationDO> trainStationRelationDOList =
                             trainStationRelationMapper.selectList(relationQueryWrapper);
@@ -96,7 +98,10 @@ public class RegionTrainStationJobHandler extends IJobHandler {
                             (StringRedisTemplate) distributedCache.getInstance();
 
                     String buildCacheKey = REGION_TRAIN_STATION + StrUtil.join(
-                            "_", startRegion, endRegion, dateTime
+                            "_",
+                            startRegion,
+                            endRegion,
+                            dateTime
                     );
 
                     stringRedisTemplate.opsForZSet().add(
@@ -114,9 +119,9 @@ public class RegionTrainStationJobHandler extends IJobHandler {
 
     private String getJobRequestParam() {
         return EnvUtil.isDevEnvironment()
-                    ? ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-                            .getRequest()
-                            .getHeader("requestParam")
+                    ? ((ServletRequestAttributes) Objects.requireNonNull(
+                            RequestContextHolder.getRequestAttributes())
+                    ).getRequest().getHeader("requestParam")
                     : XxlJobHelper.getJobParam();
     }
 }

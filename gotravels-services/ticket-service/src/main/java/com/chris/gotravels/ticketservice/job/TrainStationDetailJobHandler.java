@@ -31,7 +31,8 @@ import static com.chris.gotravels.ticketservice.common.constant.RedisKeyConstant
  */
 @RestController
 @RequiredArgsConstructor
-public class TrainStationDetailJobHandler extends AbstractTrainStationJobHandlerTemplate {
+public class TrainStationDetailJobHandler
+        extends AbstractTrainStationJobHandlerTemplate {
 
     private final TrainStationRelationMapper trainStationRelationMapper;
     private final DistributedCache distributedCache;
@@ -45,11 +46,14 @@ public class TrainStationDetailJobHandler extends AbstractTrainStationJobHandler
 
     @Override
     protected void actualExecute(List<TrainDO> trainDOPageRecords) {
-        for (TrainDO each : trainDOPageRecords) {
-            LambdaQueryWrapper<TrainStationRelationDO> relationQueryWrapper = Wrappers.lambdaQuery(TrainStationRelationDO.class)
-                    .eq(TrainStationRelationDO::getTrainId, each.getId());
+        for (var each : trainDOPageRecords) {
+            LambdaQueryWrapper<TrainStationRelationDO> relationQueryWrapper =
+                    Wrappers.lambdaQuery(TrainStationRelationDO.class)
+                        .eq(TrainStationRelationDO::getTrainId, each.getId());
 
-            List<TrainStationRelationDO> trainStationRelationDOList = trainStationRelationMapper.selectList(relationQueryWrapper);
+            List<TrainStationRelationDO> trainStationRelationDOList =
+                    trainStationRelationMapper.selectList(relationQueryWrapper);
+
             if (CollUtil.isEmpty(trainStationRelationDOList))
                 return;
 

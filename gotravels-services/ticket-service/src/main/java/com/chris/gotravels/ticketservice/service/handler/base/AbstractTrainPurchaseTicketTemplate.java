@@ -48,6 +48,21 @@ public abstract class AbstractTrainPurchaseTicketTemplate
                     .build();
     }
 
+    /**
+     * 扣减余票
+     * <p>
+     * 逻辑
+     *      锁定数据库的列车座位车票状态记录，从可售状态变更为锁定状态
+     *      将缓存中的座位余量进行扣减，卖出去一个自减一，卖出去两个自减二
+     * <p>
+     * 2. 扣减缓存座位余量
+     * <p>
+     * 列车信息以及对应站点的座位余量都是从缓存读的
+     * 把数据库的列车座位记录状态从可售变更为锁定状态(1)，同时也要把缓存相关的余量进行对应的扣减(2)
+     * <p>
+     * 把扣减数据库和缓存扣减放在一个流程里
+     * (优化——通过监听 MySQL Binlog 发送消息队列，在消息队列消费端监听到消息进行扣减 Redis 库存)
+     * */
     @Override
     public List<TrainPurchaseTicketRespDTO> executeResp(SelectSeatDTO requestParam) {
         // 根据乘车人选择对应座位
@@ -87,7 +102,7 @@ public abstract class AbstractTrainPurchaseTicketTemplate
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         distributedCache =
                 ApplicationContextHolder.getBean(DistributedCache.class);
 
